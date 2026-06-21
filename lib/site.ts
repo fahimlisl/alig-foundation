@@ -1,9 +1,9 @@
 export const SITE = {
   name: 'Alig Foundation',
   tagline: 'An Initiative to Initiate',
-  phone: '+91 98765 43210',
-  email: 'info@aligfoundation.in',
-  address: 'Civil Lines, Aligarh, Uttar Pradesh 202001, India',
+  phone: '+91 74650 08633, +91 82796 64517',
+  email: 'aligfoundation23@gmail.com',
+  address: 'Main Road, Okhla Head, New Delhi',
   logo: '/images/alig-logo.jpeg',
 }
 

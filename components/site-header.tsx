@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
@@ -8,11 +8,28 @@ import { ChevronDown, Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { NAV, SITE } from '@/lib/site'
 import { cn } from '@/lib/utils'
+type Course = { _id: string; title: string }
 
 export function SiteHeader() {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [coursesOpen, setCoursesOpen] = useState(false)
+  const [courses, setCourses] = useState<Course[]>([])
+
+  useEffect(() => {
+    async function fetchCourses() {
+      try {
+        const res = await fetch('/api/course/fetch-all')
+        const data = await res.json()
+        if (data.success) {
+          setCourses(data.data || [])
+        }
+      } catch (err) {
+        console.error('failed to load courses for nav', err)
+      }
+    }
+    fetchCourses()
+  }, [])
 
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' : pathname.startsWith(href)
@@ -42,10 +59,9 @@ export function SiteHeader() {
           </span>
         </Link>
 
-        {/* Desktop nav */}
         <nav className="hidden items-center gap-1 lg:flex">
           {NAV.map((item) =>
-            item.children ? (
+            item.href === '/courses' ? (
               <div key={item.href} className="group relative">
                 <Link
                   href={item.href}
@@ -58,15 +74,27 @@ export function SiteHeader() {
                   <ChevronDown className="size-4 transition-transform group-hover:rotate-180" />
                 </Link>
                 <div className="invisible absolute left-0 top-full w-56 translate-y-1 rounded-xl border border-border bg-popover p-2 opacity-0 shadow-lg transition-all group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
-                  {item.children.map((child) => (
-                    <Link
-                      key={child.href}
-                      href={child.href}
-                      className="block rounded-lg px-3 py-2 text-sm font-medium text-popover-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-                    >
-                      {child.label}
-                    </Link>
-                  ))}
+                  <Link
+                    href="/courses"
+                    className="block rounded-lg px-3 py-2 text-sm font-medium text-popover-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                  >
+                    All Courses
+                  </Link>
+                  {courses.length === 0 ? (
+                    <span className="block px-3 py-2 text-sm text-muted-foreground">
+                      No courses yet
+                    </span>
+                  ) : (
+                    courses.map((course) => (
+                      <Link
+                        key={course._id}
+                        href={`/courses/${course._id}`}
+                        className="block rounded-lg px-3 py-2 text-sm font-medium text-popover-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                      >
+                        {course.title}
+                      </Link>
+                    ))
+                  )}
                 </div>
               </div>
             ) : (
@@ -102,7 +130,7 @@ export function SiteHeader() {
         <div className="border-t border-border bg-background lg:hidden">
           <nav className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-4 sm:px-6">
             {NAV.map((item) =>
-              item.children ? (
+              item.href === '/courses' ? (
                 <div key={item.href}>
                   <button
                     type="button"
@@ -126,16 +154,22 @@ export function SiteHeader() {
                       >
                         All Courses
                       </Link>
-                      {item.children.map((child) => (
-                        <Link
-                          key={child.href}
-                          href={child.href}
-                          onClick={() => setMobileOpen(false)}
-                          className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground"
-                        >
-                          {child.label}
-                        </Link>
-                      ))}
+                      {courses.length === 0 ? (
+                        <span className="rounded-md px-3 py-2 text-sm text-muted-foreground">
+                          No courses yet
+                        </span>
+                      ) : (
+                        courses.map((course) => (
+                          <Link
+                            key={course._id}
+                            href={`/courses/${course._id}`}
+                            onClick={() => setMobileOpen(false)}
+                            className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground"
+                          >
+                            {course.title}
+                          </Link>
+                        ))
+                      )}
                     </div>
                   )}
                 </div>
@@ -153,14 +187,6 @@ export function SiteHeader() {
                 </Link>
               ),
             )}
-            <Button
-              render={<Link href="/admissions" onClick={() => setMobileOpen(false)} />}
-              nativeButton={false}
-              className="mt-2 rounded-full font-semibold"
-              size="lg"
-            >
-              Student Login
-            </Button>
           </nav>
         </div>
       )}
