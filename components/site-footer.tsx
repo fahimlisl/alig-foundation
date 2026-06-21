@@ -1,9 +1,31 @@
+'use client'
+
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Mail, MapPin, Phone } from 'lucide-react'
-import { COURSES, NAV, SITE } from '@/lib/site'
+import { NAV, SITE } from '@/lib/site'
+
+type Course = { _id: string; title: string }
 
 export function SiteFooter() {
+  const [courses, setCourses] = useState<Course[]>([])
+
+  useEffect(() => {
+    async function fetchCourses() {
+      try {
+        const res = await fetch('/api/course/fetch-all')
+        const data = await res.json()
+        if (data.success) {
+          setCourses(data.data || [])
+        }
+      } catch (err) {
+        console.error('failed to load courses for footer', err)
+      }
+    }
+    fetchCourses()
+  }, [])
+
   return (
     <footer className="border-t border-border bg-foreground text-background">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-2 lg:grid-cols-4 lg:px-8">
@@ -54,16 +76,20 @@ export function SiteFooter() {
             Courses
           </h3>
           <ul className="space-y-2.5">
-            {COURSES.map((c) => (
-              <li key={c.slug}>
-                <Link
-                  href={`/courses/${c.slug}`}
-                  className="text-sm text-background/70 transition-colors hover:text-background"
-                >
-                  {c.short}
-                </Link>
-              </li>
-            ))}
+            {courses.length === 0 ? (
+              <li className="text-sm text-background/50">No courses yet</li>
+            ) : (
+              courses.map((c) => (
+                <li key={c._id}>
+                  <Link
+                    href={`/courses/${c._id}`}
+                    className="text-sm text-background/70 transition-colors hover:text-background"
+                  >
+                    {c.title}
+                  </Link>
+                </li>
+              ))
+            )}
           </ul>
         </div>
 
@@ -92,9 +118,22 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-background/10">
-        <div className="mx-auto max-w-7xl px-4 py-5 text-center text-xs text-background/60 sm:px-6 lg:px-8">
-          © {new Date().getFullYear()} {SITE.name}. All rights reserved. An initiative to
-          initiate.
+        <div className="mx-auto flex max-w-7xl flex-col items-center gap-2 px-4 py-5 text-center text-xs text-background/60 sm:px-6 lg:px-8">
+          <p>
+            © {new Date().getFullYear()} {SITE.name}. All rights reserved. An initiative to
+            initiate.
+          </p>
+          <p>
+            Developed and maintained by{' '}
+            <a
+              href="https://fahim.in"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-background/80 underline-offset-2 transition-colors hover:text-background hover:underline"
+            >
+              Fahim Abdullah
+            </a>
+          </p>
         </div>
       </div>
     </footer>
