@@ -10,6 +10,7 @@ export interface Application extends Document {
     course: Types.ObjectId; // will be fetched from db or manually will be hardcoded .. 
     schoolBoardName: string; // name of the school board name of 12th
     permanentAddress: string;
+    email:string;
     state: string;
     district: string;
     pin: number;
@@ -22,6 +23,9 @@ const applicationSchema: Schema<Application> = new Schema({
         type:String,
         required:true,
         unique:true
+    },
+    email:{
+        type:String,
     },
     name:{
         type:String,
