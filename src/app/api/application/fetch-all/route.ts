@@ -18,7 +18,7 @@ export async function GET(request:NextRequest) {
     await dbConnect();
 
     try {
-        const applicants = await applicationModel.find({})
+        const applicants = await applicationModel.find({}).populate("course")
         return Response.json(
             {
                 success:true,
