@@ -1,16 +1,7 @@
-// lib/adminFetch.ts
-//
-// Drop-in replacement for fetch() on admin dashboard pages.
-// On a 401, it tries /api/admin/refresh-token once, and if that succeeds,
-// retries the original request exactly once with the new cookies.
-// If refresh also fails, it redirects to /admin/login.
-
 let refreshInFlight: Promise<boolean> | null = null;
 
 async function refreshAccessToken(): Promise<boolean> {
 
-    // de-dupe: if multiple requests 401 at the same time (e.g. a page firing
-    // 3 fetches in parallel), only actually call refresh once, let the rest wait on it
     if (refreshInFlight) return refreshInFlight;
 
     refreshInFlight = (async () => {
