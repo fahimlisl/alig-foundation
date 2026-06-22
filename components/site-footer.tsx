@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Mail, MapPin, Phone } from 'lucide-react'
+import { FaInstagram, FaFacebook, FaYoutube, FaLinkedin, FaTwitter, FaWhatsapp, FaTelegram } from 'react-icons/fa'
 import { NAV, SITE } from '@/lib/site'
 
 type Course = { _id: string; title: string }
@@ -25,6 +26,15 @@ export function SiteFooter() {
     }
     fetchCourses()
   }, [])
+
+  const socials = [
+    { label: 'Instagram', href: "https://www.instagram.com/alig_foundation?utm_source=qr&igsh=NWVqZDhtMHo5czBk", Icon: FaInstagram },
+    { label: 'Facebook', href: "", Icon: FaFacebook },
+    { label: 'WhatsApp', href: "https://whatsapp.com/channel/0029VajUXLL7dmeVGD81gC1U", Icon: FaWhatsapp },
+    { label: 'YouTube', href: "https://www.youtube.com/@alig_foundation", Icon: FaYoutube },
+    { label: 'LinkedIn', href: "", Icon: FaLinkedin },
+    { label: 'Telegram', href: "https://t.me/ALIG_FOUNDATION_MCQ", Icon: FaTelegram },
+  ].filter((s) => Boolean(s.href))
 
   return (
     <footer className="border-t border-border bg-foreground text-background">
@@ -115,6 +125,28 @@ export function SiteFooter() {
               </a>
             </li>
           </ul>
+
+          {socials.length > 0 && (
+            <div className="mt-5">
+              <h3 className="mb-3 text-sm font-bold uppercase tracking-wider text-primary">
+                Follow Us
+              </h3>
+              <div className="flex items-center gap-3">
+                {socials.map(({ label, href, Icon }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    className="flex size-9 items-center justify-center rounded-full border border-background/15 text-background/70 transition-colors hover:border-background/30 hover:bg-background/10 hover:text-background"
+                  >
+                    <Icon className="size-4" />
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
       <div className="border-t border-background/10">

@@ -4,6 +4,7 @@ import { Poppins, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
+import { WhatsAppFloat } from '@/components/whatsapp-float'
 
 const poppins = Poppins({
   variable: '--font-poppins',
@@ -41,6 +42,7 @@ export default function RootLayout({
         <SiteHeader />
         <main className="min-h-screen">{children}</main>
         <SiteFooter />
+        <WhatsAppFloat />
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

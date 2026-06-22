@@ -134,7 +134,7 @@ export async function POST(request: Request) {
       { $inc: { lastNumber: 1 } },
       { upsert: true, new: true },
     );
-    const applicationId = `${new Date().getFullYear().toString().slice(-2)}${c.courseSymbol}${c.lastNumber.toString().padStart(4, "0")}`;
+    const applicationId = `E${c.lastNumber.toString().padStart(4, "0")}${c.courseSymbol}`;
 
     const application = await applicationModel.create({
       applicationId,

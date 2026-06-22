@@ -8,6 +8,7 @@ export interface Course extends Document {
     finalPrice: number;
     duration: string; // like 1 year or 5 months
     highlights : Highlights[];
+    order: number;
 }
 
 export interface Highlights {
@@ -24,6 +25,10 @@ const hihgLightSchema:Schema<Highlights> = new Schema(
 
 const courseSchema:Schema<Course> = new Schema(
     {
+        order:{
+            type:Number,
+            required:true
+        },
         title:{
             type: String,
             required:true

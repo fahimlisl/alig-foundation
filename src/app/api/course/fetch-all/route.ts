@@ -4,7 +4,7 @@ import courseModel from "@/src/models/course.model";
 export async function GET() {
     await dbConnect()
     try {
-        const c = await courseModel.find({});
+        const c = await courseModel.find({}).sort({ order: 1, createdAt: 1 });
         return Response.json(
             {
                 success:true,

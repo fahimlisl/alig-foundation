@@ -1,30 +1,15 @@
-import { Quote } from 'lucide-react'
+'use client'
+
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { Check, ChevronLeft, ChevronRight, Quote } from 'lucide-react'
 
 const POINTS = [
-  {
-    lead: 'Personal mentorship',
-    rest: " — we don't just teach, we mentor every student individually through their entire preparation journey.",
-  },
-  {
-    lead: '24×7 student support',
-    rest: ' — reach your teachers directly, any time you need guidance or your doubts won\'t wait.',
-  },
-  {
-    lead: 'Affordable fees',
-    rest: ' — quality coaching priced for every student, not just the ones who can afford it.',
-  },
-  {
-    lead: 'Live interactive classes',
-    rest: ' — every session runs live on Google Meet, so you ask, you get answered, instantly.',
-  },
-  {
-    lead: 'Experienced faculty',
-    rest: ' — mentors who focus on concept clarity, exam strategy, and your individual growth.',
-  },
-  {
-    lead: 'Comprehensive mock tests',
-    rest: ' — tested, analysed, and broken down, so you know exactly where to improve next.',
-  },
+  'Personal mentorship',
+  '24×7 student support',
+  'Affordable fees',
+  'Live interactive classes',
+  'Experienced faculty',
+  'Comprehensive mock tests',
 ]
 
 const TESTIMONIALS = [
@@ -112,25 +97,18 @@ export function HomeFeatures() {
             <span className="text-primary">It's mentorship that doesn't stop.</span>
           </h2>
 
-          <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            For years, we've helped students reach their academic goals through personalized
-            support and a student-first approach. Every batch, every doubt, every late-night
-            question — someone's actually there.
-          </p>
-
-          <div className="mt-8 max-w-3xl text-base leading-loose text-foreground sm:text-lg">
-            {POINTS.map((p, i) => (
-              <span key={p.lead}>
-                <span className="font-heading font-bold text-foreground">{p.lead}</span>
-                <span className="text-muted-foreground">{p.rest}</span>
-                {i < POINTS.length - 1 && (
-                  <span className="mx-2 text-primary/40" aria-hidden="true">
-                    &nbsp;—&nbsp;
-                  </span>
-                )}
-              </span>
+          <ul className="mt-8 grid max-w-3xl gap-3 sm:grid-cols-2">
+            {POINTS.map((point) => (
+              <li key={point} className="flex items-center gap-3">
+                <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
+                  <Check className="size-3.5" strokeWidth={3} />
+                </span>
+                <span className="font-heading text-base font-bold text-foreground sm:text-lg">
+                  {point}
+                </span>
+              </li>
             ))}
-          </div>
+          </ul>
 
           <p className="mt-10 font-heading text-2xl font-extrabold text-foreground sm:text-3xl">
             At Alig Foundation, your success{' '}
@@ -143,30 +121,132 @@ export function HomeFeatures() {
 }
 
 export function HomeTestimonials() {
+  const trackRef = useRef<HTMLDivElement>(null)
+  const [activeIndex, setActiveIndex] = useState(0)
+  const [canPrev, setCanPrev] = useState(false)
+  const [canNext, setCanNext] = useState(true)
+
+  const updateEdges = useCallback(() => {
+    const el = trackRef.current
+    if (!el) return
+    const maxScroll = el.scrollWidth - el.clientWidth
+    setCanPrev(el.scrollLeft > 8)
+    setCanNext(el.scrollLeft < maxScroll - 8)
+
+    const trackCenter = el.scrollLeft + el.clientWidth / 2
+    let closestIdx = 0
+    let closestDist = Infinity
+    TESTIMONIALS.forEach((_, i) => {
+      const card = el.children[i] as HTMLElement | undefined
+      if (!card) return
+      const cardCenter = card.offsetLeft + card.offsetWidth / 2
+      const dist = Math.abs(cardCenter - trackCenter)
+      if (dist < closestDist) {
+        closestDist = dist
+        closestIdx = i
+      }
+    })
+    setActiveIndex(closestIdx)
+  }, [])
+
+  useEffect(() => {
+    const el = trackRef.current
+    if (!el) return
+    updateEdges()
+
+    let raf = 0
+    const onScroll = () => {
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(updateEdges)
+    }
+    el.addEventListener('scroll', onScroll, { passive: true })
+
+    const onResize = () => updateEdges()
+    window.addEventListener('resize', onResize)
+
+    return () => {
+      el.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onResize)
+      cancelAnimationFrame(raf)
+    }
+  }, [updateEdges])
+
+  const scrollToIndex = (index: number) => {
+    const el = trackRef.current
+    if (!el) return
+    const clamped = Math.min(TESTIMONIALS.length - 1, Math.max(0, index))
+    const slide = el.children[clamped] as HTMLElement | undefined
+    if (slide) {
+      slide.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
+    }
+  }
+
+  const goPrev = () => scrollToIndex(activeIndex - 1)
+  const goNext = () => scrollToIndex(activeIndex + 1)
+
   return (
     <div>
-      <div className="mt-12 columns-1 gap-6 sm:columns-2 lg:columns-3 [&>*]:mb-6">
-        {TESTIMONIALS.map((t) => (
-          <figure
+      <div className="relative mt-12">
+        <div
+          ref={trackRef}
+          className="flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-2 [-ms-overflow-style:none] [scroll-padding-inline:0.5rem] [scrollbar-width:none] sm:[scroll-padding-inline:1rem] [&::-webkit-scrollbar]:hidden"
+          style={{ scrollBehavior: 'smooth' }}
+        >
+          {TESTIMONIALS.map((t) => (
+            <figure
+              key={t.name}
+              className="flex shrink-0 snap-center flex-col rounded-3xl border border-border bg-card p-7 [flex:0_0_calc(100%-1rem)] sm:[flex:0_0_calc((100%-1.5rem)/2)] lg:[flex:0_0_calc((100%-3rem)/3)]"
+            >
+              <Quote className="size-6 text-primary/60" />
+
+              <blockquote className="mt-4 line-clamp-[10] text-[0.95rem] leading-relaxed text-card-foreground">
+                {t.quote}
+              </blockquote>
+
+              <figcaption className="mt-6 flex items-center justify-between gap-3 border-t border-border pt-4">
+                <div>
+                  <p className="font-heading font-bold text-foreground">{t.name}</p>
+                  <p className="text-xs text-muted-foreground">{t.detail}</p>
+                </div>
+                <span className="shrink-0 rounded-full bg-accent px-3 py-1 text-xs font-bold text-accent-foreground">
+                  {t.rank}
+                </span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          onClick={goPrev}
+          disabled={!canPrev}
+          aria-label="Previous testimonials"
+          className="absolute -left-2 top-1/2 hidden -translate-y-1/2 items-center justify-center rounded-full border border-border bg-card text-foreground shadow-md transition-all hover:bg-accent disabled:pointer-events-none disabled:opacity-0 sm:-left-4 sm:flex sm:size-11 lg:-left-5"
+        >
+          <ChevronLeft className="size-5" />
+        </button>
+        <button
+          type="button"
+          onClick={goNext}
+          disabled={!canNext}
+          aria-label="Next testimonials"
+          className="absolute -right-2 top-1/2 hidden -translate-y-1/2 items-center justify-center rounded-full border border-border bg-card text-foreground shadow-md transition-all hover:bg-accent disabled:pointer-events-none disabled:opacity-0 sm:-right-4 sm:flex sm:size-11 lg:-right-5"
+        >
+          <ChevronRight className="size-5" />
+        </button>
+      </div>
+
+      <div className="mt-6 flex items-center justify-center gap-2">
+        {TESTIMONIALS.map((t, i) => (
+          <button
             key={t.name}
-            className="break-inside-avoid rounded-3xl border border-border bg-card p-7"
-          >
-            <Quote className="size-6 text-primary/60" />
-
-            <blockquote className="mt-4 text-[0.95rem] leading-relaxed text-card-foreground">
-              {t.quote}
-            </blockquote>
-
-            <figcaption className="mt-6 flex items-center justify-between gap-3 border-t border-border pt-4">
-              <div>
-                <p className="font-heading font-bold text-foreground">{t.name}</p>
-                <p className="text-xs text-muted-foreground">{t.detail}</p>
-              </div>
-              <span className="shrink-0 rounded-full bg-accent px-3 py-1 text-xs font-bold text-accent-foreground">
-                {t.rank}
-              </span>
-            </figcaption>
-          </figure>
+            type="button"
+            onClick={() => scrollToIndex(i)}
+            aria-label={`Go to testimonial ${i + 1}`}
+            className={`h-1.5 rounded-full transition-all duration-300 ${
+              i === activeIndex ? 'w-6 bg-primary' : 'w-1.5 bg-border'
+            }`}
+          />
         ))}
       </div>
     </div>
