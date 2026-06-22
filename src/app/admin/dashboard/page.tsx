@@ -8,6 +8,7 @@ type Applicant = {
   _id: string
   applicationId: string
   name: string
+  email: string
   gurdianName: string
   phoneNumber: string
   gurdianPhoneNumber: string
@@ -95,6 +96,7 @@ export default function ApplicantsPage() {
                   <th className="px-5 py-3">Application ID</th>
                   <th className="px-5 py-3">Name</th>
                   <th className="px-5 py-3">Phone</th>
+                  <th className="px-5 py-3">Email</th>
                   <th className="px-5 py-3">Course</th>
                   <th className="px-5 py-3">Registered</th>
                 </tr>
@@ -109,6 +111,7 @@ export default function ApplicantsPage() {
                     <td className="px-5 py-3.5 font-medium text-card-foreground">{a.applicationId}</td>
                     <td className="px-5 py-3.5 text-card-foreground">{a.name}</td>
                     <td className="px-5 py-3.5 text-muted-foreground">{a.phoneNumber}</td>
+                    <td className="px-5 py-3.5 text-muted-foreground">{a?.email}</td>
                     <td className="px-5 py-3.5 text-muted-foreground">
                       {typeof a.course === 'object' ? a.course?.title : '—'}
                     </td>
@@ -178,6 +181,7 @@ function ApplicantDetail({ applicant, onBack }: { applicant: Applicant; onBack: 
 
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
           <DetailRow icon={Phone} label="Student Phone" value={applicant.phoneNumber} />
+          <DetailRow icon={Phone} label="Student Email" value={applicant?.email} />
           <DetailRow icon={Phone} label="Guardian Phone" value={applicant.gurdianPhoneNumber} />
           <DetailRow icon={Users} label="Guardian Name" value={applicant.gurdianName} />
           <DetailRow icon={Hash} label="Gender" value={applicant.gender} />
