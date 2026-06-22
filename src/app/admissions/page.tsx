@@ -36,6 +36,7 @@ async function getAdmissionStatus() {
     admissionFee: app?.admissionFee ?? 100,
   }
 }
+export const dynamic = 'force-dynamic'
 
 export default async function AdmissionsPage() {
   const { admissionOpen, admissionFee } = await getAdmissionStatus()
