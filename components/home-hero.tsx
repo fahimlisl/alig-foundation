@@ -8,17 +8,15 @@ export function HomeHero() {
       <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-12 sm:px-6 lg:grid-cols-2 lg:gap-12 lg:px-8 lg:py-20">
         <div>
           <p className="text-sm font-bold uppercase tracking-[0.2em] text-blue-200">
-            Admission Open
+            REGISTRATIONS OPEN
           </p>
 
           <h1 className="mt-4 font-heading text-3xl font-extrabold leading-tight text-balance sm:text-4xl lg:text-5xl">
-            Best Coaching for AMU BA LLB | AMU BA | AMU BAFL | AMU MBA Entrance
+              An affordable online learning platform for AMU BA LLB | AMU BA | AMU BA FL | AMU MBA (CAT) Entrance Examinations.
           </h1>
 
           <p className="mt-5 max-w-md text-base font-medium leading-relaxed text-white/80">
-            Admissions are open for Online and Offline Classroom Coaching. Learn from
-            expert mentors and join Aligarh&apos;s most trusted entrance preparation
-            family.
+            Registrations are now open for Live Interactive Online Classes for the AMU Entrance Preparation Session 2027–28.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
@@ -28,7 +26,7 @@ export function HomeHero() {
               size="lg"
               className="rounded-full bg-white px-7 font-bold text-blue-900 hover:bg-white/90"
             >
-              Enroll Today
+              Register Now
             </Button>
 
             <Button
