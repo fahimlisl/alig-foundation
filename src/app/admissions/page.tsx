@@ -30,6 +30,7 @@ const STEPS = [
 async function getAdmissionStatus() {
   await dbConnect()
   const app = await applicationPermissionModel.findOne({ key: 'global' }).lean()
+  console.log("log of app lets see what does it returns in my production",app)
   return {
     admissionOpen: app?.admissionOpen ?? true,
     admissionFee: app?.admissionFee ?? 100,
