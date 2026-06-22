@@ -1,14 +1,58 @@
 'use client'
 
 import { useState } from 'react'
-import { CheckCircle2 } from 'lucide-react'
+import emailjs from '@emailjs/browser'
+import { CheckCircle2, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 const fieldClass =
   'w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30'
 
+const COURSES = ['AMU BA LLB', 'AMU BA', 'AMU BAFL', 'AMU MBA']
+
 export function ContactForm() {
   const [submitted, setSubmitted] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [error, setError] = useState('')
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setError('')
+
+    const form = e.currentTarget
+    const formData = new FormData(form)
+
+    const name = String(formData.get('name') || '')
+    const phone = String(formData.get('phone') || '')
+    const email = String(formData.get('email') || '')
+    const course = String(formData.get('course') || '')
+    const message = String(formData.get('message') || '')
+
+    setSending(true)
+    try {
+      await emailjs.send(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
+        {
+          name,
+          from_name: name,
+          reply_to: email,
+          phone_number: phone,
+          interested_course: course,
+          message,
+        },
+        { publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY! }
+      )
+
+      setSubmitted(true)
+      form.reset()
+    } catch (err) {
+      console.error('failed to send contact form via emailjs', err)
+      setError('Something went wrong sending your message. Please try again.')
+    } finally {
+      setSending(false)
+    }
+  }
 
   if (submitted) {
     return (
@@ -31,13 +75,13 @@ export function ContactForm() {
   }
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault()
-        setSubmitted(true)
-      }}
-      className="rounded-2xl border border-border bg-card p-6 sm:p-8"
-    >
+    <form onSubmit={handleSubmit} className="rounded-2xl border border-border bg-card p-6 sm:p-8">
+      {error && (
+        <div className="mb-4 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+          {error}
+        </div>
+      )}
+
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="sm:col-span-1">
           <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-foreground">
@@ -79,11 +123,9 @@ export function ContactForm() {
             <option value="" disabled>
               Select a course
             </option>
-            <option>AMU BA LLB</option>
-            <option>AMU BA</option>
-            <option>AMU BAFL</option>
-            <option>AMU MBA</option>
-            <option>Other</option>
+            {COURSES.map((c) => (
+              <option key={c}>{c}</option>
+            ))}
           </select>
         </div>
         <div className="sm:col-span-2">
@@ -99,8 +141,16 @@ export function ContactForm() {
           />
         </div>
       </div>
-      <Button type="submit" size="lg" className="mt-6 w-full rounded-full font-bold">
-        Send Message
+
+      <Button type="submit" size="lg" className="mt-6 w-full rounded-full font-bold" disabled={sending}>
+        {sending ? (
+          <span className="flex items-center justify-center gap-2">
+            <Loader2 className="size-4 animate-spin" />
+            Sending...
+          </span>
+        ) : (
+          'Send Message'
+        )}
       </Button>
     </form>
   )
