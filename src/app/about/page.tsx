@@ -16,26 +16,31 @@ const TEAM = [
     name: 'Mohammad Shahrukh',
     role: 'B.A. (Hons) Economics & LLB (DU), B.A. (Hons) Turkish Language (JMI)',
     exp: 'Faculty: General Awareness',
+    profile: '/images/mohd_shahrukh_faculty.jpeg',
   },
   {
     name: 'Gufran Chaudhary',
     role: 'MBA (AMU), AMU RCA Alumni',
     exp: 'Faculty: English',
+    profile: '/images/gufran_faculty.jpeg',
   },
   {
     name: 'Insaf Ali Khan',
     role: 'B.Tech, AMU Alumnus & Selected in Indian Railway',
     exp: 'Faculty: Mathematics & Reasoning',
+        profile: './images/insaf_ali_faculty.jpeg',
   },
   {
     name: 'Mohd Aaqil',
     role: 'Research Scholar, AMU',
     exp: 'Faculty: Teaching Aptitude',
+    profile: '/images/mohd_aqil_faculty.jpeg',
   },
   {
     name: 'Divyanshu Purwar',
     role: 'LLM (JMI), Judiciary Aspirant',
     exp: 'Faculty: Legal Language',
+    profile: '/images/divyanshu_faculty.jpeg',
   },
 ]
 
@@ -101,9 +106,19 @@ export default function AboutPage() {
               key={m.name}
               className="rounded-2xl border border-border bg-card p-6 text-center"
             >
-              <span className="mx-auto flex size-20 items-center justify-center rounded-full bg-accent font-heading text-2xl font-extrabold text-accent-foreground">
-                {m.name.split(' ').map((w) => w[0]).slice(0, 2).join('')}
-              </span>
+              {m.profile ? (
+                <div className="mx-auto size-20 overflow-hidden rounded-full">
+                  <img
+                    src={m.profile}
+                    alt={m.name}
+                    className="h-full w-full scale-125 object-cover object-top"
+                  />
+                </div>
+              ) : (
+                <span className="mx-auto flex size-20 items-center justify-center rounded-full bg-accent font-heading text-2xl font-extrabold text-accent-foreground">
+                  {m.name.split(' ').map((w) => w[0]).slice(0, 2).join('')}
+                </span>
+              )}
               <h3 className="mt-4 font-heading font-bold text-card-foreground">
                 {m.name}
               </h3>

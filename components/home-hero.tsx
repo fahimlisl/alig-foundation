@@ -43,7 +43,7 @@ export function HomeHero() {
 
         <div>
           <h2 className="mb-6 text-center font-heading text-2xl font-extrabold text-white sm:text-3xl">
-            Top Ranked Students are from here
+            Top-100 AMU BALLB RANKERS (GENERAL CATEGORY)
           </h2>
 
           <ToppersCarousel />
