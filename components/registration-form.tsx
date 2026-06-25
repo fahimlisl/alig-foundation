@@ -473,6 +473,16 @@ export function RegistrationForm() {
           </Field>
         </div>
 
+        <div className="flex items-start gap-2 rounded-xl border border-amber-600/30 bg-amber-600/10 px-4 py-3 text-sm text-amber-800">
+          <AlertCircle className="mt-0.5 size-4 shrink-0" />
+          <span>
+            <strong>Important:</strong> Please don't close this browser or
+            press back after paying. Wait until you see the{" "}
+            <strong>payment confirmation</strong> and your{" "}
+            <strong>Registration ID</strong> on screen .
+          </span>
+        </div>
+
         {status && (
           <div
             className={`flex items-start gap-2 rounded-xl border px-4 py-3 text-sm ${
