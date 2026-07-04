@@ -2,6 +2,7 @@ import Razorpay from "razorpay";
 import { REGISTRATION_FEE } from "@/src/lib/constants/payment";
 import applicationModel from "@/src/models/application.model";
 import courseModel from "@/src/models/course.model";
+import dbConnect from "@/src/lib/dbConnect";  
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID!,
@@ -9,6 +10,7 @@ const razorpay = new Razorpay({
 });
 
 export async function POST(request: Request) {
+  await dbConnect(); 
   try {
     const { phoneNumber, course, email } = await request.json();
     if (!email || typeof email !== "string") {
