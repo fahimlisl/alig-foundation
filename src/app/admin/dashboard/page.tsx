@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Users, ArrowLeft, Loader2, Phone, MapPin, School, Hash } from 'lucide-react'
+import { Users, ArrowLeft, Loader2, Phone, MapPin, School, Hash, UserPlus } from 'lucide-react'
 import { adminFetch } from '@/src/lib/adminFetch'
+import { ManualRegistrationModal } from '@/src/app/components/admin/ManualRegistrationModal'
 
 type Applicant = {
   _id: string
@@ -29,6 +30,7 @@ export default function ApplicantsPage() {
   const [error, setError] = useState('')
   const [selected, setSelected] = useState<Applicant | null>(null)
   const [search, setSearch] = useState('')
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
     fetchApplicants()
@@ -38,10 +40,7 @@ export default function ApplicantsPage() {
     setLoading(true)
     setError('')
     try {
-      // adminFetch handles the 401 -> refresh -> retry -> (or redirect to login) flow internally,
-      // so no manual res.status === 401 check is needed here anymore
       const res = await adminFetch('/api/application/fetch-all')
-
       const data = await res.json()
       if (data.success) {
         setApplicants(data.data || [])
@@ -71,87 +70,115 @@ export default function ApplicantsPage() {
   })
 
   return (
-    <div>
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-muted-foreground">
-          {applicants.length} total applicant{applicants.length === 1 ? '' : 's'}
-        </p>
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search by name, ID, or phone…"
-          className="w-full rounded-xl border border-border bg-card px-4 py-2.5 text-sm text-foreground outline-none transition-colors focus:ring-2 focus:ring-primary/40 sm:w-72"
-        />
-      </div>
-
-      {filtered.length === 0 ? (
-        <EmptyState label="No applicants found." />
-      ) : (
-        <div className="overflow-hidden rounded-2xl border border-border bg-card">
-          <div className="hidden sm:block">
-            <table className="w-full text-left text-sm">
-              <thead className="border-b border-border bg-secondary/50 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                <tr>
-                  <th className="px-5 py-3">Application ID</th>
-                  <th className="px-5 py-3">Name</th>
-                  <th className="px-5 py-3">Phone</th>
-                  <th className="px-5 py-3">Email</th>
-                  <th className="px-5 py-3">Course</th>
-                  <th className="px-5 py-3">Registered</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {filtered.map((a) => (
-                  <tr
-                    key={a._id}
-                    onClick={() => setSelected(a)}
-                    className="cursor-pointer transition-colors hover:bg-secondary/50"
-                  >
-                    <td className="px-5 py-3.5 font-medium text-card-foreground">{a.applicationId}</td>
-                    <td className="px-5 py-3.5 text-card-foreground">{a.name}</td>
-                    <td className="px-5 py-3.5 text-muted-foreground">{a.phoneNumber}</td>
-                    <td className="px-5 py-3.5 text-muted-foreground">{a?.email}</td>
-                    <td className="px-5 py-3.5 text-muted-foreground">
-                      {typeof a.course === 'object' ? a.course?.title : '—'}
-                    </td>
-                    <td className="px-5 py-3.5 text-muted-foreground">
-                      {new Date(a.createdAt).toLocaleDateString('en-IN', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric',
-                      })}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+    <>
+      <div>
+        {/* Header with Add Button */}
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="font-heading text-2xl font-bold text-card-foreground">
+              Applicants
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              {applicants.length} total applicant{applicants.length === 1 ? '' : 's'}
+            </p>
           </div>
-
-          <div className="divide-y divide-border sm:hidden">
-            {filtered.map((a) => (
-              <button
-                key={a._id}
-                onClick={() => setSelected(a)}
-                className="flex w-full items-center justify-between px-4 py-4 text-left transition-colors active:bg-secondary/50"
-              >
-                <div>
-                  <p className="font-medium text-card-foreground">{a.name}</p>
-                  <p className="mt-0.5 text-xs text-muted-foreground">
-                    {a.applicationId} · {a.phoneNumber}
-                  </p>
-                </div>
-                <span className="text-xs text-muted-foreground">
-                  {typeof a.course === 'object' ? a.course?.title : ''}
-                </span>
-              </button>
-            ))}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by name, ID, or phone…"
+              className="w-full rounded-xl border border-border bg-card px-4 py-2.5 text-sm text-foreground outline-none transition-colors focus:ring-2 focus:ring-primary/40 sm:w-72"
+            />
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            >
+              <UserPlus className="size-4" />
+              Add Student
+            </button>
           </div>
         </div>
-      )}
-    </div>
+
+        {/* Table */}
+        {filtered.length === 0 ? (
+          <EmptyState label="No applicants found." />
+        ) : (
+          <div className="overflow-hidden rounded-2xl border border-border bg-card">
+            <div className="hidden sm:block">
+              <table className="w-full text-left text-sm">
+                <thead className="border-b border-border bg-secondary/50 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  <tr>
+                    <th className="px-5 py-3">Application ID</th>
+                    <th className="px-5 py-3">Name</th>
+                    <th className="px-5 py-3">Phone</th>
+                    <th className="px-5 py-3">Email</th>
+                    <th className="px-5 py-3">Course</th>
+                    <th className="px-5 py-3">Registered</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {filtered.map((a) => (
+                    <tr
+                      key={a._id}
+                      onClick={() => setSelected(a)}
+                      className="cursor-pointer transition-colors hover:bg-secondary/50"
+                    >
+                      <td className="px-5 py-3.5 font-medium text-card-foreground">{a.applicationId}</td>
+                      <td className="px-5 py-3.5 text-card-foreground">{a.name}</td>
+                      <td className="px-5 py-3.5 text-muted-foreground">{a.phoneNumber}</td>
+                      <td className="px-5 py-3.5 text-muted-foreground">{a?.email}</td>
+                      <td className="px-5 py-3.5 text-muted-foreground">
+                        {typeof a.course === 'object' ? a.course?.title : '—'}
+                      </td>
+                      <td className="px-5 py-3.5 text-muted-foreground">
+                        {new Date(a.createdAt).toLocaleDateString('en-IN', {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric',
+                        })}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile View */}
+            <div className="divide-y divide-border sm:hidden">
+              {filtered.map((a) => (
+                <button
+                  key={a._id}
+                  onClick={() => setSelected(a)}
+                  className="flex w-full items-center justify-between px-4 py-4 text-left transition-colors active:bg-secondary/50"
+                >
+                  <div>
+                    <p className="font-medium text-card-foreground">{a.name}</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground">
+                      {a.applicationId} · {a.phoneNumber}
+                    </p>
+                  </div>
+                  <span className="text-xs text-muted-foreground">
+                    {typeof a.course === 'object' ? a.course?.title : ''}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Manual Registration Modal */}
+      <ManualRegistrationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSuccess={fetchApplicants}
+      />
+    </>
   )
 }
+
+// ============== Helper Components ==============
 
 function ApplicantDetail({ applicant, onBack }: { applicant: Applicant; onBack: () => void }) {
   const courseTitle = typeof applicant.course === 'object' ? applicant.course?.title : null

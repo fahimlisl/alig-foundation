@@ -14,7 +14,7 @@ export interface Application extends Document {
     state: string;
     district: string;
     pin: number;
-    razorpayOrderId: string;
+    razorpayOrderId: string; 
 }
 
 
@@ -74,7 +74,6 @@ const applicationSchema: Schema<Application> = new Schema({
     },
     razorpayOrderId: {
         type: String,
-        required: true,
         unique: true
     },
 },
