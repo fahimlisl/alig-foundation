@@ -76,7 +76,7 @@ export function SiteHeader() {
                 <div className="invisible absolute left-0 top-full w-56 translate-y-1 rounded-xl border border-border bg-popover p-2 opacity-0 shadow-lg transition-all group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
                   <Link
                     href="/courses"
-                    className="block rounded-lg px-3 py-2 text-sm font-medium text-popover-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                    className="block rounded-lg px-3 py-2 text-sm hover:text-white font-medium text-popover-foreground transition-colors hover:bg-[#a8324c] hover:text-accent-foreground"
                   >
                     All Courses
                   </Link>
@@ -89,7 +89,7 @@ export function SiteHeader() {
                       <Link
                         key={course._id}
                         href={`/courses/${course._id}`}
-                        className="block rounded-lg px-3 py-2 text-sm font-medium text-popover-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                        className="block rounded-lg px-3 py-2 text-sm font-medium text-popover-foreground transition-colors hover:text-white hover:bg-[#a8324c] hover:text-accent-foreground"
                       >
                         {course.title}
                       </Link>

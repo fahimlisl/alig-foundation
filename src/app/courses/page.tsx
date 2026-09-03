@@ -48,7 +48,7 @@ export default function CoursesPage() {
     <>
       <PageHero
         title="Our Courses"
-        subtitle="Choose from our specialised AMU entrance preparation programs, designed for online and offline learning."
+        subtitle="Our courses are designed to make online learning simple, structured, and effective for students preparing for competitive university entrance examinations. With expert guidance, comprehensive study material, regular practice, and exam-focused strategies."
       />
 
       <section className="mx-auto max-w-screen-2xl px-4 py-14 sm:px-6 lg:px-10 lg:py-20">

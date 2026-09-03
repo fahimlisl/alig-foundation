@@ -10,8 +10,7 @@ export function CtaBanner() {
           Ready to begin your AMU journey?
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-base font-medium text-primary-foreground/80 text-white">
-          Take the first step today. Register now for online or offline classes and learn
-          from mentors who have produced top rankers year after year.
+          Start your preparation with Alig Foundation Online, a focused coaching platform for AMU entrance examinations. Join online classes, expert mentorship, comprehensive study material, weekly tests, and exam oriented preparation.
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Button

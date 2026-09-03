@@ -12,7 +12,7 @@ export type Topper = {
   photo?: string
 }
 
-export const TOPPERS: Topper[] = [
+export const TOPPERS_BA_LLB: Topper[] = [
   {
     name: 'Khadija Khan',
     rank: '14',
@@ -98,6 +98,100 @@ export const TOPPERS: Topper[] = [
   },
 ]
 
+export const TOPPERS_BA: Topper[] = [
+  {
+    name: 'Khadija Khan',
+    rank: '1',
+    exam: 'AMU B.A.(Hons.) F.L.',
+    batch: 'Batch 4.0 (2026)',
+    photo: '/images/toppers/topper-khadija.jpeg',
+  },
+  {
+    name: 'Anamta Husain',
+    rank: '1',
+    exam: 'AMU B.A.(Hons.)',
+    batch: 'Batch 1.0 (2023)',
+    photo: '/images/toppers/anamta_topper_ba.jpeg',
+  },
+  {
+    name: 'Mujahid Alam',
+    rank: '5',
+    exam: 'AMU B.A.(Hons.)',
+    batch: 'Batch 2.0 (2024)',
+    photo: '/images/toppers/mujahid_topper_ba.jpeg',
+  },
+  {
+    name: 'Barirah Junaid',
+    rank: '6',
+    exam: 'AMU B.A.(Hons.)',
+    batch: 'Batch 2.0 (2024)',
+    photo: '/images/toppers/barirah_topper_ba.jpeg',
+  },
+  {
+    name: 'Ayesha Aiman',
+    rank: '6',
+    exam: 'AMU B.A.(Hons.) F.L.',
+    batch: 'Batch 2.0 (2024)',
+    photo: '/images/toppers/ayesha_topper_ba.jpeg',
+  },
+  {
+    name: 'Kulsum Nisha',
+    rank: '9',
+    exam: 'AMU B.A.(Hons.)',
+    batch: 'Batch 3.0 (2025)',
+    photo: '/images/toppers/kulsum_topper_ba.jpeg',
+  },
+  {
+    name: 'Eram Ansari',
+    rank: '9',
+    exam: 'AMU B.A.(Hons.)',
+    batch: 'Batch 2.0 (2024)',
+    photo: '/images/toppers/eram_topper_ba.jpeg',
+  },
+  {
+    name: 'Vedanti Sanwariya',
+    rank: '12',
+    exam: 'AMU B.A.(Hons.)',
+    batch: 'Batch 4.0 (2026)',
+    photo: '/images/toppers/vedanti_topper_ba.jpeg',
+  },
+  {
+    name: 'Barirah Junaid',
+    rank: '12',
+    exam: 'AMU B.A.(Hons.) F.L.',
+    batch: 'Batch 2.0 (2024)',
+    photo: '/images/toppers/barirah_topper_ba.jpeg',
+  },
+  {
+    name: 'Rehma Khatoon',
+    rank: '15',
+    exam: 'AMU B.A.(Hons.)',
+    batch: 'Batch 1.0 (2023)',
+    photo: '/images/toppers/rehma_topper_ba.jpeg',
+  },
+  {
+    name: 'Sadia Anjum',
+    rank: '17',
+    exam: 'AMU B.A.(Hons.)',
+    batch: 'Batch 3.0 (2025)',
+    photo: '/images/toppers/sadia_topper_ba.jpeg',
+  },
+  {
+    name: 'Yasmeen Parween',
+    rank: '18',
+    exam: 'AMU B.A.(Hons.)',
+    batch: 'Batch 3.0 (2025)',
+    photo: '/images/toppers/yasmeen_topper_ba.jpeg',
+  },
+  {
+    name: 'Laiba Anwer',
+    rank: '19',
+    exam: 'AMU B.A.(Hons.)',
+    batch: 'Batch 3.0 (2025)',
+    photo: '/images/toppers/laiba_topper_ba.jpeg',
+  },
+]
+
 function getInitials(name: string) {
   return name
     .split(' ')
@@ -107,7 +201,7 @@ function getInitials(name: string) {
     .toUpperCase()
 }
 
-export function ToppersCarousel({ toppers = TOPPERS }: { toppers?: Topper[] }) {
+export function ToppersCarousel({ toppers = TOPPERS_BA_LLB }: { toppers?: Topper[] }) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [perView, setPerView] = useState(2)
@@ -182,13 +276,14 @@ export function ToppersCarousel({ toppers = TOPPERS }: { toppers?: Topper[] }) {
                   .slice(slideIndex * perView, slideIndex * perView + perView)
                   .map((t) => (
                     <article
-                      key={t.name}
+                      key={t.name + t.rank}
                       className="flex flex-col items-center rounded-2xl bg-card p-4 shadow-lg"
                     >
                       <div className="flex w-full items-start justify-between">
                         <div className="leading-none">
                           <p className="text-xs font-bold text-muted-foreground">RANK</p>
-                          <p className="font-heading text-2xl font-extrabold text-primary sm:text-2xl">
+                          {/* INCREASED RANK SIZE */}
+                          <p className="font-heading text-3xl font-extrabold text-primary sm:text-4xl md:text-5xl">
                             {t.rank}
                           </p>
                         </div>
