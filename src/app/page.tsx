@@ -27,9 +27,9 @@ export default function HomePage() {
       <section className="bg-secondary">
         <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
           <SectionHeading
-            eyebrow="Why Students Choose Alig Foundation"
+            eyebrow="Why Students Choose Alig Foundation?"
             title=""
-            description="Everything you need to prepare smarter and perform better in your entrance exam."
+            description=""
           />
           <div className="mt-10">
             <HomeFeatures />

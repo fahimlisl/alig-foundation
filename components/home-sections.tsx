@@ -2,15 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Check, ChevronLeft, ChevronRight, Quote } from 'lucide-react'
-
-const POINTS = [
-  'Personal mentorship',
-  '24×7 student support',
-  'Affordable fees',
-  'Live interactive classes',
-  'Experienced faculty',
-  'Comprehensive mock tests',
-]
+import Image from 'next/image'
+import { SectionHeading } from '@/components/section-heading'
 
 const TESTIMONIALS = [
   {
@@ -78,8 +71,6 @@ const TESTIMONIALS = [
   },
 ]
 
-
-
 const COURSE_FEATURES = [
   'Personal mentorship',
   '24x7 student support',
@@ -108,10 +99,6 @@ export function HomeFeatures() {
         />
 
         <div>
-          <p className="font-heading text-xs font-bold uppercase tracking-[0.2em] text-primary">
-            Why students choose us
-          </p>
-
           <h2 className="mt-3 max-w-3xl font-heading text-3xl font-extrabold leading-tight text-foreground sm:text-4xl">
             Education here isn't just teaching.{' '}
             <span className="text-primary">It's mentorship that doesn't stop.</span>
@@ -270,7 +257,7 @@ export function HomeTestimonials() {
                   <p className="font-heading font-bold text-foreground">{t.name}</p>
                   <p className="text-xs text-muted-foreground">{t.detail}</p>
                 </div>
-                <span className="shrink-0 rounded-full bg-[#a8324c] px-3 py-1 text-xs font-bold text-accent-foreground text-white">
+                <span className="shrink-0 rounded-full bg-[#a8324c] px-3 py-1 text-xs font-bold text-white">
                   {t.rank}
                 </span>
               </figcaption>
@@ -315,9 +302,6 @@ export function HomeTestimonials() {
   )
 }
 
-import Image from 'next/image'
-import { SectionHeading } from '@/components/section-heading'
-
 interface Founder {
   name: string
   designation: string
@@ -329,20 +313,20 @@ interface Founder {
 
 const founders: Founder[] = [
   {
-    name: 'Gufran Chaudhary',
-    designation: 'Co-Founder & Academic Head',
-    bio: 'Focused on academic excellence, curriculum development, and student success. He holds an MBA from Aligarh Muslim University (AMU) and is committed to providing structured, quality-driven education.',
-    extraInfo: '📚 Curriculum · Mentorship',
-    imageSrc: '/images/gufran_faculty.jpeg',
-    imageAlt: 'Gufran Chaudhary - Co-Founder & Academic Head',
-  },
-  {
     name: 'Mohammad Shahrukh',
     designation: 'Founder & Management Head',
     bio: 'An alumnus of Satyawati College, Delhi University and Jamia Millia Islamia. He holds Bachelor\'s degrees in Economics with Political Science and Turkish Language. He is currently pursuing LL.B. and M.A. in Political Science. Under his guidance, many students have successfully secured admission to AMU and other reputed universities.',
     extraInfo: '🎓 DU · Jamia Millia · B.A. Economics, Political Science, Turkish',
     imageSrc: '/images/mohd_shahrukh_faculty.jpeg',
     imageAlt: 'Mohammad Shahrukh - Founder & Management Head',
+  },
+  {
+    name: 'Gufran Chaudhary',
+    designation: 'Co-Founder & Academic Head',
+    bio: 'Focused on academic excellence, curriculum development, and student success. He holds an MBA from Aligarh Muslim University (AMU) and is committed to providing structured, quality-driven education.',
+    extraInfo: '📚 Curriculum · Mentorship',
+    imageSrc: '/images/gufran_faculty.jpeg',
+    imageAlt: 'Gufran Chaudhary - Co-Founder & Academic Head',
   },
 ]
 
@@ -384,8 +368,7 @@ function FounderCard({ founder, index }: { founder: Founder; index: number }) {
           <h3 className="text-xl md:text-2xl font-bold text-[#1f1b15] tracking-tight">
             {founder.name}
           </h3>
-          <span className="inline-flex items-center gap-1.5 bg-gradient-to-r bg-[#a8324c] text-white from-amber-500/20 to-amber-400/20 text-amber-800 text-[10px] md:text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full border border-amber-300/30 shadow-sm">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-500/60" />
+          <span className="inline-flex items-center gap-1.5 bg-[#a8324c] text-white text-[10px] md:text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full shadow-sm">
             {founder.designation}
           </span>
         </div>
@@ -400,9 +383,9 @@ function FounderCard({ founder, index }: { founder: Founder; index: number }) {
         {/* Extra info / tags */}
         {founder.extraInfo && (
           <div className="mt-3 flex flex-wrap items-center gap-2 text-xs md:text-sm text-amber-700/80">
-            <span className="inline-flex items-center gap-1 bg-amber-50/50 px-2.5 py-1 rounded-full border border-amber-200/30">
+            {/* <span className="inline-flex items-center gap-1 bg-amber-50/50 px-2.5 py-1 rounded-full border border-amber-200/30">
               {founder.extraInfo}
-            </span>
+            </span> */}
           </div>
         )}
       </div>
