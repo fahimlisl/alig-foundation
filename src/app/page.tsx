@@ -12,7 +12,7 @@ export default function HomePage() {
       <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
         <SectionHeading
           eyebrow="Our Programs"
-          title="Courses We Offer"
+          title=""
           description="Targeted preparation programs for every major AMU entrance examination, built around your goals."
         />
         <div className="mt-10">
@@ -23,8 +23,8 @@ export default function HomePage() {
       <section className="bg-secondary">
         <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
           <SectionHeading
-            eyebrow="Why Alig Foundation"
-            title="Why Students Choose Alig Foundation"
+            eyebrow="Why Students Choose Alig Foundation"
+            title=""
             description="Everything you need to prepare smarter and perform better in your entrance exam."
           />
           <div className="mt-10">

@@ -113,7 +113,7 @@ export function CoursesGrid() {
                 </ul>
               )}
 
-              <span className="mt-5 flex items-center justify-center gap-1.5 rounded-xl bg-primary py-2.5 text-sm font-bold text-primary-foreground transition-opacity group-hover:opacity-90">
+              <span className="mt-5 flex items-center justify-center gap-1.5 rounded-xl bg-primary py-2.5 text-sm font-bold text-primary-foreground transition-opacity group-hover:opacity-90 text-white">
                 View Details
                 <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
               </span>

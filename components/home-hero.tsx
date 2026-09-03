@@ -11,8 +11,8 @@ export function HomeHero() {
             REGISTRATIONS OPEN
           </p>
 
-          <h1 className="mt-4 font-heading text-3xl font-extrabold leading-tight text-balance sm:text-4xl lg:text-5xl">
-              An affordable online learning platform for AMU BA LLB | AMU BA | AMU BA FL | AMU MBA (CAT) Entrance Examinations.
+          <h1 className="mt-4 font-heading text-2xl font-extrabold leading-tight text-balance sm:text-3xl lg:text-4xl">
+            An affordable online learning platform for AMU BA LLB | AMU BA | AMU BA FL | AMU MBA (CAT) Entrance Examinations.
           </h1>
 
           <p className="mt-5 max-w-md text-base font-medium leading-relaxed text-white/80">

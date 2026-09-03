@@ -32,14 +32,14 @@ const TESTIMONIALS = [
       'I got Rank 26 (General) and Rank 13 (BC category) in AMU BA Hons entrance exam 2026. It\'s possible only because of Alig Foundation. The main motto — "Study limited, revise unlimited" — helped me secure this decent rank. I would like to thank the whole team, especially Shahrukh Sir and Gufran Sir, who mentored and motivated me. If you want selection along with a decent rank, Alig Foundation is the best.',
     name: 'Ilma',
     detail: 'AMU BA (Hons.) 2026',
-    rank: 'Rank 26 · 13',
+    rank: 'Rank 26',
   },
   {
     quote:
       'Alhamdulillah, in AMU BA 2026 I have secured 120 in the General Category and Category Rank 22 (CA). I am truly grateful to Alig Foundation for the guidance, mentorship, and continuous support throughout my preparation journey. The dedication of the teachers, their constant motivation, and the student-friendly environment played a very important role in helping me achieve this result. A heartfelt thank you to Shahrukh Sir and Gufran Sir for their support and encouragement.',
     name: 'Nadia Rahim',
     detail: 'AMU BA 2026',
-    rank: 'Rank 120 · CA-22',
+    rank: 'Rank 120',
   },
   {
     quote:
@@ -53,7 +53,7 @@ const TESTIMONIALS = [
       'In AMU BA LLB 2026 I have got the 14th rank in the general category — 1st rank in CE, 1st rank in CA, and the 1st rank in the General Category in the AMU BAFL entrance exam. The biggest contribution to my achievement has been Alig Foundation. The constant guidance and mentorship of the teachers, their availability for students, and their absolute excellence have led me here. A huge thank you to Shahrukh Sir and Gufran Sir.',
     name: 'Khadija Khan',
     detail: 'AMU BA LLB & BAFL 2026',
-    rank: 'Rank 14 · CE 1 · CA 1',
+    rank: 'Rank 14',
   },
   {
     quote:
@@ -67,7 +67,7 @@ const TESTIMONIALS = [
       'I am deeply grateful to Alig Foundation for being an integral part of my journey and success in securing 19th rank in the general category and 7th rank in the special category in BA (Hons) 2025. This achievement would not have been possible without the dedicated guidance, constant encouragement, and unwavering support of my teachers — Shahrukh Sir, Gufran Sir, and Asaf Sir. Their expert teaching, well-structured materials, and motivating environment helped me stay focused and confident, preparing me not just for exams, but for life ahead.',
     name: 'Laiba Anwer',
     detail: 'AMU BA (Hons.) 2025',
-    rank: 'Rank 19 · 7',
+    rank: 'Rank 19',
   },
   {
     quote:
@@ -208,7 +208,7 @@ export function HomeTestimonials() {
                   <p className="font-heading font-bold text-foreground">{t.name}</p>
                   <p className="text-xs text-muted-foreground">{t.detail}</p>
                 </div>
-                <span className="shrink-0 rounded-full bg-accent px-3 py-1 text-xs font-bold text-accent-foreground">
+                <span className="shrink-0 rounded-full bg-[#a8324c] px-3 py-1 text-xs font-bold text-accent-foreground text-white">
                   {t.rank}
                 </span>
               </figcaption>
