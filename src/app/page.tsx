@@ -17,8 +17,16 @@ export default function HomePage() {
         <SectionHeading
           eyebrow="Our Programs"
           title=""
-          description="Our programs are designed to make online learning simple, structured, and effective for students preparing for competitive university entrance examinations. With expert guidance, comprehensive study material, regular practice, and exam-focused strategies."
+          description=""
         />
+        <p className="mt-4 max-w-2xl mx-auto text-center text-base text-muted-foreground leading-relaxed text-pretty">
+          Our programs are designed to make{' '}
+          <span className="font-bold text-foreground">
+            online learning simple, structured, and effective
+          </span>{' '}
+          for students preparing for competitive university entrance examinations. 
+          With expert guidance, comprehensive study material, regular practice, and exam-focused strategies.
+        </p>
         <div className="mt-10">
           <CoursesGrid />
         </div>

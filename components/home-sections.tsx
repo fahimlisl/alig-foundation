@@ -104,16 +104,19 @@ export function HomeFeatures() {
             <span className="text-primary">It's mentorship that doesn't stop.</span>
           </h2>
 
-          {/* Course Features Description */}
+          {/* Course Features Description - Bold text */}
           <p className="mt-4 max-w-2xl text-base text-muted-foreground leading-relaxed">
-            Our courses are designed specifically around the AMU entrance examination pattern, 
-            syllabus, and requirements, keeping preparation focused and relevant.
+            <span className="font-bold text-foreground">Why Students Choose Alig Foundation?</span>
+            <br />
+            Our courses are designed specifically around the{' '}
+            <span className="font-bold text-foreground">AMU entrance examination pattern, syllabus, and requirements</span>
+            , keeping preparation focused and relevant.
           </p>
 
           {/* Course Features */}
           <div className="mt-8">
             <h3 className="font-heading text-lg font-bold text-foreground">
-              Course Features:
+              <span className="text-primary">Course Features:</span>
             </h3>
             <ul className="mt-3 grid max-w-3xl gap-3 sm:grid-cols-2">
               {COURSE_FEATURES.map((feature) => (
@@ -132,7 +135,7 @@ export function HomeFeatures() {
           {/* Extra Features */}
           <div className="mt-8">
             <h3 className="font-heading text-lg font-bold text-foreground">
-              Extra Features:
+              <span className="text-primary">Extra features:</span>
             </h3>
             <ul className="mt-3 grid max-w-3xl gap-3 sm:grid-cols-2">
               {EXTRA_FEATURES.map((feature) => (
@@ -154,8 +157,8 @@ export function HomeFeatures() {
               One Goal — <span className="text-primary">AMU</span>
             </h3>
             <p className="mt-3 max-w-2xl text-base text-muted-foreground leading-relaxed">
-              Everything we do is focused on helping students prepare better, perform confidently, 
-              and move closer to their dream of studying at Aligarh Muslim University.
+              Everything we do is focused on helping students{' '}
+              <span className="font-bold text-foreground">prepare better, perform confidently, and move closer to their dream of studying at Aligarh Muslim University.</span>
             </p>
           </div>
 
@@ -323,7 +326,7 @@ const founders: Founder[] = [
   {
     name: 'Gufran Chaudhary',
     designation: 'Co-Founder & Academic Head',
-    bio: 'Focused on academic excellence, curriculum development, and student success. He holds an MBA from Aligarh Muslim University (AMU) and is committed to providing structured, quality-driven education.',
+    bio: 'Focused on academic excellence, curriculum development, and student success. He holds an ',
     extraInfo: '📚 Curriculum · Mentorship',
     imageSrc: '/images/gufran_faculty.jpeg',
     imageAlt: 'Gufran Chaudhary - Co-Founder & Academic Head',
@@ -366,7 +369,8 @@ function FounderCard({ founder, index }: { founder: Founder; index: number }) {
       <div className="flex-1 min-w-0">
         <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-1">
           <h3 className="text-xl md:text-2xl font-bold text-[#1f1b15] tracking-tight">
-            {founder.name}
+            {/* Bold name as in screenshot */}
+            <span className="font-extrabold">{founder.name}</span>
           </h3>
           <span className="inline-flex items-center gap-1.5 bg-[#a8324c] text-white text-[10px] md:text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full shadow-sm">
             {founder.designation}
@@ -378,9 +382,17 @@ function FounderCard({ founder, index }: { founder: Founder; index: number }) {
 
         <p className="text-[#2c2822] text-sm md:text-base leading-relaxed">
           {founder.bio}
+          {founder.name === 'Gufran Chaudhary' && (
+            <span className="font-bold text-foreground">MBA from Aligarh Muslim University (AMU)</span>
+          )}
+          {founder.name === 'Gufran Chaudhary' && (
+            <span> and is committed to providing structured, quality-driven education.</span>
+          )}
+          {founder.name === 'Mohammad Shahrukh' && (
+            <span> Under his guidance, many students have successfully secured admission to AMU and other reputed universities.</span>
+          )}
         </p>
 
-        {/* Extra info / tags */}
         {founder.extraInfo && (
           <div className="mt-3 flex flex-wrap items-center gap-2 text-xs md:text-sm text-amber-700/80">
             {/* <span className="inline-flex items-center gap-1 bg-amber-50/50 px-2.5 py-1 rounded-full border border-amber-200/30">
