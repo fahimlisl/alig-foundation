@@ -3,9 +3,22 @@
 import { useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Users, GraduationCap, Settings, KeyRound, LogOut, Loader2 } from 'lucide-react'
+import {
+  Users,
+  GraduationCap,
+  Settings,
+  KeyRound,
+  LogOut,
+  Loader2,
+  Award,
+  Trophy,
+} from 'lucide-react'
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   const router = useRouter()
   const pathname = usePathname()
   const [loggingOut, setLoggingOut] = useState(false)
@@ -24,8 +37,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const isApplicants = pathname === '/admin/dashboard'
   const isCourses = pathname.startsWith('/admin/dashboard/courses')
-  const isAdmissionSettings = pathname.startsWith('/admin/dashboard/admission-settings')
-  const isChangePassword = pathname.startsWith('/admin/dashboard/change-password')
+  const isAdmissionSettings = pathname.startsWith(
+    '/admin/dashboard/admission-settings'
+  )
+  const isScholarshipApplicants = pathname.startsWith(
+    '/admin/dashboard/scholarship-applicants'
+  )
+  const isScholarshipSettings = pathname.startsWith(
+    '/admin/dashboard/scholarship-settings'
+  )
+  const isChangePassword = pathname.startsWith(
+    '/admin/dashboard/change-password'
+  )
 
   return (
     <div className="min-h-screen bg-secondary">
@@ -53,7 +76,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               disabled={loggingOut}
               className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary disabled:opacity-60"
             >
-              {loggingOut ? <Loader2 className="size-4 animate-spin" /> : <LogOut className="size-4" />}
+              {loggingOut ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <LogOut className="size-4" />
+              )}
               <span className="hidden sm:inline">Logout</span>
             </button>
           </div>
@@ -61,14 +88,36 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </header>
 
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        <div className="mb-6 flex gap-2 rounded-xl border border-border bg-card p-1.5 sm:w-fit">
-          <NavTab href="/admin/dashboard" active={isApplicants} icon={Users} label="Applicants" />
-          <NavTab href="/admin/dashboard/courses" active={isCourses} icon={GraduationCap} label="Courses" />
+        <div className="mb-6 flex flex-wrap gap-2 rounded-xl border border-border bg-card p-1.5 sm:w-fit">
+          <NavTab
+            href="/admin/dashboard"
+            active={isApplicants}
+            icon={Users}
+            label="Applicants"
+          />
+          <NavTab
+            href="/admin/dashboard/courses"
+            active={isCourses}
+            icon={GraduationCap}
+            label="Courses"
+          />
           <NavTab
             href="/admin/dashboard/admission-settings"
             active={isAdmissionSettings}
             icon={Settings}
             label="Admissions"
+          />
+          <NavTab
+            href="/admin/dashboard/scholarship-applicants"
+            active={isScholarshipApplicants}
+            icon={Trophy}
+            label="Scholarship"
+          />
+          <NavTab
+            href="/admin/dashboard/scholarship-settings"
+            active={isScholarshipSettings}
+            icon={Award}
+            label="Scholarship Settings"
           />
         </div>
 
@@ -93,7 +142,9 @@ function NavTab({
     <Link
       href={href}
       className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-        active ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-secondary'
+        active
+          ? 'bg-primary text-primary-foreground'
+          : 'text-muted-foreground hover:bg-secondary'
       }`}
     >
       <Icon className="size-4" />

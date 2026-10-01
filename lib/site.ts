@@ -141,4 +141,5 @@ export const NAV = [
   { label: 'Admissions', href: '/admissions' },
   { label: 'Result', href: '/result' },
   { label: 'Contact', href: '/contact' },
+  { label: 'Scholarship', href: '/scholarship' },
 ]
