@@ -2,8 +2,8 @@ import dbConnect from "@/src/lib/dbConnect";
 import Razorpay from "razorpay";
 import { verifyRazorpaySignature } from "@/src/lib/utils/verifyRazorpaySignature";
 import scholarshipPermissionModel from "@/src/models/scholarship.permission.model";
+import razorpayOrderModel from "@/src/models/razorpay.order.model";
 import { createScholarshipFromOrder } from "@/src/lib/scholarship/createScholarshipFromOrder";
-import { uploadToCloudinary } from "@/src/services/cloudinary.service";
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID!,
@@ -14,24 +14,23 @@ export async function POST(request: Request) {
   await dbConnect();
 
   try {
-    const formData = await request.formData();
-
-    const full_name = formData.get("full_name") as string;
-    const gurdianName = formData.get("gurdianName") as string;
-    const phone = formData.get("phone") as string;
-    const email = formData.get("email") as string;
-    const address = formData.get("address") as string;
-    const course = formData.get("course") as string;
-    const gender = formData.get("gender") as string;
-    const mode = formData.get("mode") as "online" | "offline";
-    const avatar = formData.get("avatar") as File | null;
-
-    const razorpay_order_id = formData.get("razorpay_order_id") as string | null;
-    const razorpay_payment_id = formData.get("razorpay_payment_id") as string | null;
-    const razorpay_signature = formData.get("razorpay_signature") as string | null;
+    const {
+      full_name,
+      gurdianName,
+      phone,
+      email,
+      address,
+      course,
+      gender,
+      mode,
+      avatarUrl,
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature,
+    } = await request.json();
 
     if (
-      [full_name, gurdianName, phone, email, address, course, gender, mode].some(
+      [full_name, gurdianName, phone, email, address, course, gender, mode, avatarUrl].some(
         (t) => !t
       )
     ) {
@@ -55,9 +54,9 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!avatar || typeof avatar === "string") {
+    if (typeof avatarUrl !== "string") {
       return Response.json(
-        { success: false, message: "avatar is required" },
+        { success: false, message: "avatarUrl must be a string" },
         { status: 400 }
       );
     }
@@ -105,18 +104,7 @@ export async function POST(request: Request) {
       }
     }
 
-    const avatarUrl = await uploadToCloudinary(avatar, {
-      folder: "scholarship/avatars",
-      resourceType: "image",
-    });
-
-    if (!avatarUrl) {
-      return Response.json(
-        { success: false, message: "avatar upload failed" },
-        { status: 500 }
-      );
-    }
-
+                   
     const { scholarship, alreadyExisted } = await createScholarshipFromOrder({
       full_name,
       gurdianName,
@@ -129,6 +117,13 @@ export async function POST(request: Request) {
       avatarUrl,
       razorpayOrderId: razorpay_order_id ?? undefined,
     });
+
+    if (razorpay_order_id) {
+      await razorpayOrderModel.updateOne(
+        { orderId: razorpay_order_id },
+        { $set: { processed: true } }
+      );
+    }
 
     return Response.json(
       {
