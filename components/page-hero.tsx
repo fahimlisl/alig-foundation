@@ -1,9 +1,10 @@
+import React from "react"
 export function PageHero({
   title,
   subtitle,
 }: {
   title: string
-  subtitle?: string
+  subtitle?: React.ReactNode
 }) {
   return (
     <section className="bg-[linear-gradient(135deg,#0f172a_0%,#1e3a8a_50%,#312e81_100%)] text-white">
@@ -12,9 +13,9 @@ export function PageHero({
           {title}
         </h1>
         {subtitle && (
-          <p className="mt-4 max-w-2xl text-base font-medium text-primary-foreground/80 leading-relaxed text-white">
+          <div className="text-white mt-4 max-w-2xl text-base font-medium text-primary-foreground/80 leading-relaxed text-...">
             {subtitle}
-          </p>
+          </div>
         )}
       </div>
     </section>

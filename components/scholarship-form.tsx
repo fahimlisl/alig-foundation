@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Loader2, CheckCircle2, AlertCircle, Upload, X } from "lucide-react";
 
-type Course = { _id: string; title: string };
+const COURSE_OPTIONS = ["AMU BA LLB", "AMU BA/BAFL"] as const;
 
 type FormState = {
   full_name: string;
@@ -56,8 +56,6 @@ export function ScholarshipForm({ fee = 0, lastDate }: ScholarshipFormProps) {
   const [form, setForm] = useState<FormState>(INITIAL_FORM);
   const [avatar, setAvatar] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [coursesLoading, setCoursesLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [status, setStatus] = useState<{
     type: "success" | "error";
@@ -93,7 +91,6 @@ export function ScholarshipForm({ fee = 0, lastDate }: ScholarshipFormProps) {
     const pid = avatarPublicIdRef.current;
     if (!pid) return;
 
-    // clear first so we don't double-fire
     avatarPublicIdRef.current = null;
     avatarUrlRef.current = null;
 
@@ -110,21 +107,6 @@ export function ScholarshipForm({ fee = 0, lastDate }: ScholarshipFormProps) {
       if (avatarPreview) URL.revokeObjectURL(avatarPreview);
     };
   }, [avatarPreview]);
-
-  useEffect(() => {
-    async function fetchCourses() {
-      try {
-        const res = await fetch("/api/course/fetch-all");
-        const data = await res.json();
-        if (data.success) setCourses(data.data || []);
-      } catch (err) {
-        console.error("failed to load courses", err);
-      } finally {
-        setCoursesLoading(false);
-      }
-    }
-    fetchCourses();
-  }, []);
 
   function updateField<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -178,8 +160,6 @@ export function ScholarshipForm({ fee = 0, lastDate }: ScholarshipFormProps) {
 
   async function uploadAvatar(): Promise<boolean> {
     if (!avatar) return false;
-
-    // if already uploaded in a previous attempt, skip
     if (avatarUrlRef.current && avatarPublicIdRef.current) return true;
 
     const fd = new FormData();
@@ -240,13 +220,11 @@ export function ScholarshipForm({ fee = 0, lastDate }: ScholarshipFormProps) {
 
       const { ok, data } = await submitRegistration();
       if (!ok || !data.success) {
-        // registration failed → clean up the orphan image
         cleanupOrphanImage();
         stopSubmitting(data.message || "Registration failed. Please try again.");
         return;
       }
 
-      // success → clear refs so we don't delete a used image
       avatarUrlRef.current = null;
       avatarPublicIdRef.current = null;
 
@@ -331,7 +309,6 @@ export function ScholarshipForm({ fee = 0, lastDate }: ScholarshipFormProps) {
             });
 
             if (ok && data.success) {
-              // success → do NOT cleanup, image is in use
               avatarUrlRef.current = null;
               avatarPublicIdRef.current = null;
 
@@ -341,8 +318,6 @@ export function ScholarshipForm({ fee = 0, lastDate }: ScholarshipFormProps) {
               setForm(INITIAL_FORM);
               clearAvatar();
             } else {
-              // payment succeeded but registration failed — keep the image
-              // (webhook will use it when it fires). don't cleanup.
               stopSubmitting(
                 `${data.message} Your payment succeeded — contact support with ref: ${response.razorpay_payment_id}`
               );
@@ -356,7 +331,6 @@ export function ScholarshipForm({ fee = 0, lastDate }: ScholarshipFormProps) {
         },
         modal: {
           ondismiss: () => {
-            // user closed modal without paying → orphan cleanup
             cleanupOrphanImage();
             stopSubmitting("Payment was cancelled.");
           },
@@ -364,7 +338,6 @@ export function ScholarshipForm({ fee = 0, lastDate }: ScholarshipFormProps) {
       });
 
       razorpay.on("payment.failed", (resp: any) => {
-        // payment failed → orphan cleanup
         cleanupOrphanImage();
         stopSubmitting(resp?.error?.description || "Payment failed. Try again.");
       });
@@ -530,7 +503,7 @@ export function ScholarshipForm({ fee = 0, lastDate }: ScholarshipFormProps) {
               placeholder="Full name"
             />
           </Field>
-          <Field label="Guardian Name" error={fieldErrors.gurdianName}>
+          <Field label="Father's Name" error={fieldErrors.gurdianName}>
             <input
               type="text"
               value={form.gurdianName}
@@ -598,14 +571,11 @@ export function ScholarshipForm({ fee = 0, lastDate }: ScholarshipFormProps) {
             value={form.course}
             onChange={(e) => updateField("course", e.target.value)}
             className={inputClass(!!fieldErrors.course)}
-            disabled={coursesLoading}
           >
-            <option value="">
-              {coursesLoading ? "Loading courses…" : "Select a course"}
-            </option>
-            {courses.map((c) => (
-              <option key={c._id} value={c._id}>
-                {c.title}
+            <option value="">Select a course</option>
+            {COURSE_OPTIONS.map((c) => (
+              <option key={c} value={c}>
+                {c}
               </option>
             ))}
           </select>

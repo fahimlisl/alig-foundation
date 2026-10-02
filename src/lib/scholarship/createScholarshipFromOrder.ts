@@ -1,6 +1,4 @@
 import scholarshipModel from "@/src/models/scholarship.model";
-import courseModel from "@/src/models/course.model";
-import ScholarCounterModel from "@/src/models/counter.scholarship.model";
 
 export interface CreateScholarshipInput {
   full_name: string;
@@ -8,16 +6,14 @@ export interface CreateScholarshipInput {
   phone: string;
   email: string;
   address: string;
-  course: string; // course TITLE
+  course: string;
   gender: string;
   mode: "online" | "offline";
   avatarUrl?: string;
   razorpayOrderId?: string;
 }
 
-
 export async function createScholarshipFromOrder(input: CreateScholarshipInput) {
-
   if (input.razorpayOrderId) {
     const existing = await scholarshipModel.findOne({
       razorpayOrderId: input.razorpayOrderId,
@@ -31,38 +27,19 @@ export async function createScholarshipFromOrder(input: CreateScholarshipInput) 
   });
   if (duplicate) return { scholarship: duplicate, alreadyExisted: true };
 
-
-
-   
-  const courseDoc = await courseModel.findById(input.course);
-  if (!courseDoc) {
-    throw new Error(`course not found`);
-  }
-  console.log("what's the input is throwing to us ?? ",input);
-  console.log("what's the input.course is throwing to us ?? ",input.course);
-
-  const c = await ScholarCounterModel.findOneAndUpdate(
-    { course: courseDoc._id },
-    {
-      $inc: { lastNumber: 1 },
-    },
-    { upsert: true, new: true }
-  );
-
-  const roll_no = `ES${c.lastNumber.toString().padStart(4, "0")}${c.courseSymbol}`;
-
-  // ---------- registration_no: year prefix + doc count ----------
-  const yearPrefix = new Date().getFullYear().toString().slice(-2);
   const totalCount = await scholarshipModel.countDocuments();
-  const registration_no = `${yearPrefix}${(totalCount + 1)
+  const nextNumber = totalCount + 1;
+
+  const registration_no = `AF${(nextNumber + 100)
     .toString()
     .padStart(4, "0")}`;
 
-  // ---------- test centre ----------
+  const yearPrefix = (new Date().getFullYear() + 1).toString().slice(-2);
+  const roll_no = `${yearPrefix}${nextNumber.toString().padStart(4, "0")}`;
+
   const test_centre =
     input.mode === "online" ? "Online (Proctored Test)" : "Offline Centre (TBA)";
 
-  // ---------- create row ----------
   const scholarship = await scholarshipModel.create({
     avatar:
       input.avatarUrl ?? "https://via.placeholder.com/150?text=Pending",
@@ -74,7 +51,7 @@ export async function createScholarshipFromOrder(input: CreateScholarshipInput) 
     test_centre,
     roll_no,
     registration_no,
-    course: input.course,
+    course: input.course, 
     mode: input.mode,
     gender: input.gender,
     ...(input.razorpayOrderId ? { razorpayOrderId: input.razorpayOrderId } : {}),
