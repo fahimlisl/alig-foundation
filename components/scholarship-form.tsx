@@ -71,6 +71,8 @@ export function ScholarshipForm({ fee = 0, lastDate }: ScholarshipFormProps) {
   } | null>(null);
 
   const watchdogRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const avatarUrlRef = useRef<string | null>(null);
+  const avatarPublicIdRef = useRef<string | null>(null);
 
   function clearWatchdog() {
     if (watchdogRef.current) {
@@ -85,6 +87,21 @@ export function ScholarshipForm({ fee = 0, lastDate }: ScholarshipFormProps) {
     if (errorMessage) {
       setStatus({ type: "error", message: errorMessage });
     }
+  }
+
+  function cleanupOrphanImage() {
+    const pid = avatarPublicIdRef.current;
+    if (!pid) return;
+
+    // clear first so we don't double-fire
+    avatarPublicIdRef.current = null;
+    avatarUrlRef.current = null;
+
+    fetch("/api/upload/cleanup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ public_id: pid }),
+    }).catch((err) => console.error("cleanup request failed:", err));
   }
 
   useEffect(() => {
@@ -119,17 +136,11 @@ export function ScholarshipForm({ fee = 0, lastDate }: ScholarshipFormProps) {
     if (!file) return;
 
     if (file.size > 2 * 1024 * 1024) {
-      setFieldErrors((prev) => ({
-        ...prev,
-        avatar: "Image must be under 2 MB",
-      }));
+      setFieldErrors((prev) => ({ ...prev, avatar: "Image must be under 2 MB" }));
       return;
     }
     if (!file.type.startsWith("image/")) {
-      setFieldErrors((prev) => ({
-        ...prev,
-        avatar: "Only image files allowed",
-      }));
+      setFieldErrors((prev) => ({ ...prev, avatar: "Only image files allowed" }));
       return;
     }
 
@@ -143,6 +154,8 @@ export function ScholarshipForm({ fee = 0, lastDate }: ScholarshipFormProps) {
     if (avatarPreview) URL.revokeObjectURL(avatarPreview);
     setAvatar(null);
     setAvatarPreview(null);
+    avatarUrlRef.current = null;
+    avatarPublicIdRef.current = null;
   }
 
   function validate(): boolean {
@@ -163,31 +176,55 @@ export function ScholarshipForm({ fee = 0, lastDate }: ScholarshipFormProps) {
     return Object.keys(errors).length === 0;
   }
 
+  async function uploadAvatar(): Promise<boolean> {
+    if (!avatar) return false;
+
+    // if already uploaded in a previous attempt, skip
+    if (avatarUrlRef.current && avatarPublicIdRef.current) return true;
+
+    const fd = new FormData();
+    fd.append("file", avatar);
+
+    const res = await fetch("/api/upload", { method: "POST", body: fd });
+    const data = await res.json();
+
+    if (!res.ok || !data.success) {
+      stopSubmitting(data.message || "Photo upload failed.");
+      return false;
+    }
+
+    avatarUrlRef.current = data.url;
+    avatarPublicIdRef.current = data.public_id;
+    return true;
+  }
+
   async function submitRegistration(razorpayResponse?: {
     razorpay_order_id: string;
     razorpay_payment_id: string;
     razorpay_signature: string;
   }) {
-    const fd = new FormData();
-    fd.append("full_name", form.full_name);
-    fd.append("gurdianName", form.gurdianName);
-    fd.append("phone", form.phone);
-    fd.append("email", form.email);
-    fd.append("address", form.address);
-    fd.append("course", form.course);
-    fd.append("gender", form.gender);
-    fd.append("mode", form.mode);
-    if (avatar) fd.append("avatar", avatar);
+    const body: Record<string, any> = {
+      full_name: form.full_name,
+      gurdianName: form.gurdianName,
+      phone: form.phone,
+      email: form.email,
+      address: form.address,
+      course: form.course,
+      gender: form.gender,
+      mode: form.mode,
+      avatarUrl: avatarUrlRef.current,
+    };
 
     if (razorpayResponse) {
-      fd.append("razorpay_order_id", razorpayResponse.razorpay_order_id);
-      fd.append("razorpay_payment_id", razorpayResponse.razorpay_payment_id);
-      fd.append("razorpay_signature", razorpayResponse.razorpay_signature);
+      body.razorpay_order_id = razorpayResponse.razorpay_order_id;
+      body.razorpay_payment_id = razorpayResponse.razorpay_payment_id;
+      body.razorpay_signature = razorpayResponse.razorpay_signature;
     }
 
     const res = await fetch("/api/scholarship/register", {
       method: "POST",
-      body: fd,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
     });
     const data = await res.json();
     return { ok: res.ok, data };
@@ -195,13 +232,24 @@ export function ScholarshipForm({ fee = 0, lastDate }: ScholarshipFormProps) {
 
   async function handleFreeFlow() {
     try {
-      const { ok, data } = await submitRegistration();
-      if (!ok || !data.success) {
-        stopSubmitting(
-          data.message || "Registration failed. Please try again."
-        );
+      const uploaded = await uploadAvatar();
+      if (!uploaded) {
+        stopSubmitting("Could not upload photo. Please try again.");
         return;
       }
+
+      const { ok, data } = await submitRegistration();
+      if (!ok || !data.success) {
+        // registration failed → clean up the orphan image
+        cleanupOrphanImage();
+        stopSubmitting(data.message || "Registration failed. Please try again.");
+        return;
+      }
+
+      // success → clear refs so we don't delete a used image
+      avatarUrlRef.current = null;
+      avatarPublicIdRef.current = null;
+
       setSubmitting(false);
       setResult(data.data);
       setStatus({ type: "success", message: data.message });
@@ -209,17 +257,23 @@ export function ScholarshipForm({ fee = 0, lastDate }: ScholarshipFormProps) {
       clearAvatar();
     } catch (err) {
       console.error("free registration failed", err);
+      cleanupOrphanImage();
       stopSubmitting("Something went wrong. Please try again.");
     }
   }
 
   async function handlePaidFlow() {
     try {
+      const uploaded = await uploadAvatar();
+      if (!uploaded) {
+        stopSubmitting("Could not upload photo. Please try again.");
+        return;
+      }
+
       const scriptLoaded = await loadRazorpayScript();
       if (!scriptLoaded) {
-        stopSubmitting(
-          "Could not load payment gateway. Check your connection."
-        );
+        cleanupOrphanImage();
+        stopSubmitting("Could not load payment gateway. Check your connection.");
         return;
       }
 
@@ -235,11 +289,14 @@ export function ScholarshipForm({ fee = 0, lastDate }: ScholarshipFormProps) {
           course: form.course,
           gender: form.gender,
           mode: form.mode,
+          avatarUrl: avatarUrlRef.current,
+          avatarPublicId: avatarPublicIdRef.current,
         }),
       });
       const orderData = await orderRes.json();
 
       if (!orderRes.ok || !orderData.success) {
+        cleanupOrphanImage();
         stopSubmitting(orderData.message || "Could not initiate payment.");
         return;
       }
@@ -247,6 +304,7 @@ export function ScholarshipForm({ fee = 0, lastDate }: ScholarshipFormProps) {
       const order = orderData.order;
 
       watchdogRef.current = setTimeout(() => {
+        cleanupOrphanImage();
         stopSubmitting("Payment window did not open. Please try again.");
       }, 8000);
 
@@ -273,12 +331,18 @@ export function ScholarshipForm({ fee = 0, lastDate }: ScholarshipFormProps) {
             });
 
             if (ok && data.success) {
+              // success → do NOT cleanup, image is in use
+              avatarUrlRef.current = null;
+              avatarPublicIdRef.current = null;
+
               setSubmitting(false);
               setResult(data.data);
               setStatus({ type: "success", message: data.message });
               setForm(INITIAL_FORM);
               clearAvatar();
             } else {
+              // payment succeeded but registration failed — keep the image
+              // (webhook will use it when it fires). don't cleanup.
               stopSubmitting(
                 `${data.message} Your payment succeeded — contact support with ref: ${response.razorpay_payment_id}`
               );
@@ -291,11 +355,17 @@ export function ScholarshipForm({ fee = 0, lastDate }: ScholarshipFormProps) {
           }
         },
         modal: {
-          ondismiss: () => stopSubmitting("Payment was cancelled."),
+          ondismiss: () => {
+            // user closed modal without paying → orphan cleanup
+            cleanupOrphanImage();
+            stopSubmitting("Payment was cancelled.");
+          },
         },
       });
 
       razorpay.on("payment.failed", (resp: any) => {
+        // payment failed → orphan cleanup
+        cleanupOrphanImage();
         stopSubmitting(resp?.error?.description || "Payment failed. Try again.");
       });
 
@@ -303,6 +373,7 @@ export function ScholarshipForm({ fee = 0, lastDate }: ScholarshipFormProps) {
       clearWatchdog();
     } catch (err) {
       console.error("paid flow failed", err);
+      cleanupOrphanImage();
       stopSubmitting("Something went wrong. Please try again.");
     }
   }

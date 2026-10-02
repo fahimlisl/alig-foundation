@@ -14,7 +14,7 @@ interface UploadOptions {
 export async function uploadToCloudinary(
   file: File,
   { folder = "uploads", resourceType = "image" }: UploadOptions = {}
-): Promise<string> {
+): Promise<{ url: string; public_id: string }> {
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
@@ -26,9 +26,22 @@ export async function uploadToCloudinary(
           if (error || !result) {
             return reject(error ?? new Error("cloudinary upload failed"));
           }
-          resolve(result.secure_url);
+          resolve({
+            url: result.secure_url,
+            public_id: result.public_id,
+          });
         }
       )
       .end(buffer);
   });
+}
+
+export async function deleteFromCloudinary(publicId: string): Promise<boolean> {
+  try {
+    const result = await cloudinary.uploader.destroy(publicId);
+    return result.result === "ok";
+  } catch (error) {
+    console.error("cloudinary delete failed:", error);
+    return false;
+  }
 }

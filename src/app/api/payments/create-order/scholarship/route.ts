@@ -22,6 +22,8 @@ export async function POST(request: Request) {
       course,
       gender,
       mode,
+      avatarUrl, 
+      avatarPublicId  
     } = await request.json();
 
     if (
@@ -74,6 +76,8 @@ export async function POST(request: Request) {
       course,
       gender,
       mode,
+      avatarUrl,
+      avatarPublicId,
     };
 
     if (scholarshipFee === 0) {
