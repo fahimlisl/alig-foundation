@@ -5,6 +5,7 @@ export interface ScholarshipPermission extends Document {
     scholarshipOpen: boolean;
     scholarshipFee?: number;
     scholarshipLastDate?: Date | null;
+    issueAdmitCard: boolean
 }
 
 const scholarshipPermissionSchema: Schema<ScholarshipPermission> = new Schema(
@@ -27,6 +28,10 @@ const scholarshipPermissionSchema: Schema<ScholarshipPermission> = new Schema(
             type: Date,
             default: null,
         },
+        issueAdmitCard: {
+            type: Boolean,
+            default: false
+        }
     },
     { timestamps: true }
 );

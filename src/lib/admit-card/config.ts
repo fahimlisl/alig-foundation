@@ -1,14 +1,11 @@
-/**
- * Edit these values before publishing admit cards.
- * The date/time and instructions are deliberately fixed in code, not in MongoDB.
- * Never use last year's sample PDF date as a real new examination date.
- */
 export const ADMIT_CARD_CONFIG = {
   heading: "ADMIT CARD 4.0 (Entrance Examination 2026-27)",
   examDate: "DATE TO BE ANNOUNCED", // e.g. "15 NOVEMBER 2026"
   examTime: "TIME TO BE ANNOUNCED", // e.g. "10:30 AM to 11:30 AM"
   foundationEmail: "aligfoundation23@gmail.com",
   contactNumbers: "7465008633 / 8279664517",
+  offlineTestCentre:
+    "Aligarh Islamic School, Behind Khwaja Garden, Panwali Kothi, Civil Lines, Aligarh",
   instructions: [
     "Do not bring unauthorized materials, including written notes, dictionaries or loose papers.",
     "Changes to answers using correction fluid, rubbing, erasing or smudging may result in cancellation of the OMR sheet.",

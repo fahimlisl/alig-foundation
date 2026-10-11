@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/src/lib/dbConnect";
-// Adjust THIS import if your existing Scholarship model file uses a different name.
 import scholarshipModel from "@/src/models/scholarship.model";
 import { ADMIT_CARD_CONFIG } from "@/src/lib/admit-card/config";
 import { allowAdmitCardLookup } from "@/src/lib/admit-card/rate-limit";
 import type { AdmitCardData } from "@/src/lib/admit-card/types";
+import scholarshipPermissionModel from "@/src/models/scholarship.permission.model";
 
-export const runtime = "nodejs"; // Mongoose cannot run in the Edge runtime.
+export const runtime = "nodejs"; 
 export const dynamic = "force-dynamic";
 
 const NO_STORE = {
@@ -35,7 +35,6 @@ function parseIdentifier(body: unknown): Lookup | null {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return null;
     return { kind: "email", value: email };
   }
-  // Indian 10-digit mobile numbers, optionally prefixed by +91 or 91.
   const digits = trimmed.replace(/[\s()+-]/g, "");
   const phone = digits.length === 12 && digits.startsWith("91") ? digits.slice(2) : digits;
   if (!/^[6-9]\d{9}$/.test(phone)) return null;
@@ -43,7 +42,6 @@ function parseIdentifier(body: unknown): Lookup | null {
 }
 
 export async function POST(request: NextRequest) {
-  // Reject obvious cross-site requests (the endpoint is not meant as a public API).
   const origin = request.headers.get("origin");
   const originHost = origin ? (() => { try { return new URL(origin).host; } catch { return ""; } })() : null;
   if (originHost !== null && originHost !== request.headers.get("host")) {
@@ -69,7 +67,20 @@ export async function POST(request: NextRequest) {
 
   try {
     await dbConnect();
-    // Make sure the proxy overwrites X-Real-IP instead of passing through untrusted input.
+    const permission = await scholarshipPermissionModel
+      .findOne({ key: "scholarship" })
+      .select("issueAdmitCard")
+      .lean();
+
+    if (permission?.issueAdmitCard !== true) {
+      return send(
+        {
+          message:
+            "Admit card downloads are not available yet.",
+        },
+        403
+      );
+    }
     const ip = request.headers.get("x-real-ip") ||
       request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
     const allowed = await allowAdmitCardLookup(ip, `${lookup.kind}:${lookup.value}`);
@@ -84,11 +95,10 @@ export async function POST(request: NextRequest) {
       ? { email: { $regex: `^${escapeRegex(lookup.value)}$`, $options: "i" } }
       : { phone: { $in: [lookup.value, `91${lookup.value}`, `+91${lookup.value}`] } };
 
-    // Never choose arbitrarily between duplicate email/phone matches.
     const matches = await scholarshipModel
       .find(query)
       .select(
-        "full_name gurdianName registration_no roll_no course mode test_centre avatar"
+        "full_name gurdianName registration_no roll_no course mode avatar"
       )
       .limit(2)
       .lean();
@@ -111,8 +121,16 @@ export async function POST(request: NextRequest) {
     if (!student.registration_no || !student.roll_no || !student.full_name) {
       return send({ message: "Application details are incomplete. Contact ALIG Foundation." }, 409);
     }
-    if (student.mode === "offline" && !student.test_centre?.trim()) {
-      return send({ message: "Your test centre has not been allotted yet. Please check again later." }, 409);
+    if (
+      student.mode === "offline" &&
+      !ADMIT_CARD_CONFIG.offlineTestCentre.trim()
+    ) {
+      return send(
+        {
+          message: "Offline test centre is not configured yet.",
+        },
+        503
+      );
     }
 
     const payload: AdmitCardData = {
@@ -122,9 +140,10 @@ export async function POST(request: NextRequest) {
       rollNo: student.roll_no,
       course: student.course || "N/A",
       mode: student.mode === "online" ? "online" : "offline",
-      testCentre: student.mode === "online"
-        ? "Online examination - refer to official exam instructions"
-        : student.test_centre,
+      testCentre:
+        student.mode === "offline"
+          ? ADMIT_CARD_CONFIG.offlineTestCentre
+          : "",
       title: ADMIT_CARD_CONFIG.heading,
       examDate: ADMIT_CARD_CONFIG.examDate,
       examTime: ADMIT_CARD_CONFIG.examTime,
@@ -135,7 +154,6 @@ export async function POST(request: NextRequest) {
     };
     return send(payload);
   } catch {
-    // Never log identifiers or applicant records; only a generic server diagnostic.
     console.error("Admit card lookup failed (internal error)");
     return send({ message: "Admit card service is temporarily unavailable." }, 500);
   }

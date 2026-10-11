@@ -1,37 +1,71 @@
+import { NextRequest } from "next/server";
 import dbConnect from "@/src/lib/dbConnect";
+import { verifyAdminJWT } from "@/src/lib/verifyAdminJWT";
 import scholarshipPermissionModel from "@/src/models/scholarship.permission.model";
 
-export async function GET() {
+export const dynamic = "force-dynamic";
+
+export async function GET(request: NextRequest) {
+  const admin = verifyAdminJWT(request);
+
+  if (!admin) {
+    return Response.json(
+      {
+        success: false,
+        message: "Unauthorized — please login",
+      },
+      { status: 401 }
+    );
+  }
+
+  try {
     await dbConnect();
 
-    try {
-        let app = await scholarshipPermissionModel.findOne({ key: "scholarship" });
+    const permission =
+      await scholarshipPermissionModel
+        .findOne({ key: "scholarship" })
+        .select(
+          "scholarshipOpen scholarshipFee scholarshipLastDate issueAdmitCard"
+        )
+        .lean();
 
-        if (!app) {
-            app = await scholarshipPermissionModel.create({
-                key: "scholarship",
-                scholarshipOpen: true,
-                scholarshipFee: 0,
-                scholarshipLastDate: null,
-            });
-        }
+    return Response.json(
+      {
+        success: true,
+        data: {
+          scholarshipOpen:
+            permission?.scholarshipOpen ?? true,
 
-        return Response.json(
-            {
-                success: true,
-                message: "successfully fetched scholarship permission",
-                data: app,
-            },
-            { status: 200 }
-        );
-    } catch (error) {
-        console.error("failed to fetch permission model for scholarship", error);
-        return Response.json(
-            {
-                success: false,
-                message: "failed to fetch permission model for scholarship",
-            },
-            { status: 400 }
-        );
-    }
+          scholarshipFee:
+            permission?.scholarshipFee ?? 0,
+
+          scholarshipLastDate:
+            permission?.scholarshipLastDate ?? null,
+
+          issueAdmitCard:
+            permission?.issueAdmitCard === true,
+        },
+      },
+      {
+        status: 200,
+        headers: {
+          "Cache-Control": "no-store",
+        },
+      }
+    );
+  } catch (error) {
+    console.error(
+      "Failed to fetch scholarship settings",
+      error
+    );
+
+    return Response.json(
+      {
+        success: false,
+        message:
+          "Failed to fetch scholarship settings",
+      },
+      { status: 500 }
+    );
+  }
 }
