@@ -209,7 +209,7 @@ export default function AdmitCardClient() {
               htmlFor="admit-identifier"
               className="block text-sm font-semibold text-card-foreground"
             >
-              Mobile number or email
+              Mobile number
             </label>
 
             <input
@@ -217,7 +217,7 @@ export default function AdmitCardClient() {
               type="text"
               name="identifier"
               autoComplete="off"
-              placeholder="Phone number or email"
+              placeholder="Phone number"
               value={identifier}
               onChange={(event) =>
                 setIdentifier(event.target.value)
