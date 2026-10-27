@@ -5,7 +5,7 @@ export const ADMIT_CARD_CONFIG = {
   foundationEmail: "aligfoundation23@gmail.com",
   contactNumbers: "7465008633 / 8279664517",
   offlineTestCentre:
-    "Aligarh Islamic School, Behind Khwaja Garden, Panwali Kothi, Civil Lines, Aligarh",
+    "Khwaja International School, Khwaja Garden, Pan Wali Kothi, Civil Lines, Aligarh",
   instructions: [
     "Do not bring unauthorized materials, including written notes, dictionaries or loose papers.",
     "Changes to answers using correction fluid, rubbing, erasing or smudging may result in cancellation of the OMR sheet.",
