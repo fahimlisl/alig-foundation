@@ -146,11 +146,11 @@ export async function POST(request: NextRequest) {
           : "",
       title: ADMIT_CARD_CONFIG.heading,
       examDate: ADMIT_CARD_CONFIG.examDate,
-      examTime: ADMIT_CARD_CONFIG.examTime,
+      examTime: student.mode === "offline" ?  "11:00 AM To 12:30 PM" : "9:00 PM To 10:20 PM",
       foundationEmail: ADMIT_CARD_CONFIG.foundationEmail,
       contactNumbers: ADMIT_CARD_CONFIG.contactNumbers,
-      instructions: [...ADMIT_CARD_CONFIG.instructions],
-      avatarUrl: student.avatar,
+      instructions: student.mode === "online" ? [...ADMIT_CARD_CONFIG.onlineInstructions] : [...ADMIT_CARD_CONFIG.offlineInstructions],
+      avatarUrl: student?.avatar,
     };
     return send(payload);
   } catch {
