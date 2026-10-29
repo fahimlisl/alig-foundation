@@ -18,7 +18,7 @@ export const TOPPERS_BA_LLB: Topper[] = [
     rank: '14',
     exam: 'AMU BA LLB',
     batch: 'Batch 4.0 (2026)',
-    photo: '/images/toppers/topper-khadija.jpeg',
+    photo: '/images/toppers/topper-ballb-khadija.jpeg',
   },
   {
     name: 'Asaf Shad',
