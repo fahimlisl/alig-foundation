@@ -1,6 +1,6 @@
 export const ADMIT_CARD_CONFIG = {
   heading: "ADMIT CARD BATCH 5.0 (Entrance Examination 2027-28)",
-  examDate: "01/10/2026 (SUNDAY)", // e.g. "15 NOVEMBER 2026"
+  examDate: "01/11/2026 (SUNDAY)", // e.g. "15 NOVEMBER 2026"
   examTime: "TIME TO BE ANNOUNCED", // e.g. "10:30 AM to 11:30 AM"
   foundationEmail: "aligfoundation23@gmail.com",
   contactNumbers: "7465008633 / 8279664517",
