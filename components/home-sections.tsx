@@ -100,14 +100,14 @@ export function HomeFeatures() {
 
         <div>
           <h2 className="mt-3 max-w-3xl font-heading text-3xl font-extrabold leading-tight text-foreground sm:text-4xl">
-            Education here isn't just teaching.{' '}
-            <span className="text-primary">It's mentorship that doesn't stop.</span>
+            {/* Education here isn't just teaching.{' '}
+            <span className="text-primary">It's mentorship that doesn't stop.</span> */}
           </h2>
 
           {/* Course Features Description - Bold text */}
           <p className="mt-4 max-w-2xl text-base text-muted-foreground leading-relaxed">
-            <span className="font-bold text-foreground">Why Students Choose Alig Foundation?</span>
-            <br />
+            {/* <span className="font-bold text-foreground">Why Students Choose Alig Foundation?</span> */}
+            {/* <br /> */}
             Our courses are designed specifically around the{' '}
             <span className="font-bold text-foreground">AMU entrance examination pattern, syllabus, and requirements</span>
             , keeping preparation focused and relevant.
