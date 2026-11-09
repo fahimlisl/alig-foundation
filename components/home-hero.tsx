@@ -42,14 +42,14 @@ export function HomeHero() {
                 </Button>
               </div>
 
-              <Button
+              {/* <Button
                 render={<Link href="/scholarship/admit-card" />}
                 nativeButton={false}
                 size="lg"
                 className="rounded-full bg-blue-500 px-7 font-bold text-white hover:bg-blue-400"
               >
                 Get Admit Card
-              </Button>
+              </Button> */}
             </div>
           </div>
 
