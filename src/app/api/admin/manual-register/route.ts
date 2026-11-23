@@ -97,7 +97,7 @@ export async function POST(request: Request) {
       state,
       district,
       pin,
-      razorpayOrderId: "manual registration", // No payment details since this is a manual registration
+      razorpayOrderId: `manual registration-${applicationId}`, // No payment details since this is a manual registration
       // No razorpay fields since admin manually registered
     });
 
